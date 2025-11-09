@@ -1,0 +1,55 @@
+{
+  "expo": {
+    "name": "Tiffin Nation",
+    "slug": "tiffin-nation",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/tiffin-nation.png",
+    "userInterfaceStyle": "light",
+    "scheme": "tiffinnation",
+    "splash": {
+      "image": "./assets/images/tiffin-nation.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FF2020"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.tiffinnation.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/tiffin-nation.png",
+        "backgroundColor": "#FF2020"
+      },
+      "package": "com.tiffinnation.app",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow Tiffin Nation to use your location."
+        }
+      ],
+      "expo-font",
+      "expo-web-browser"
+    ],
+    "extra": {
+      "google": {
+        "expoClientId": "905410154761-lgpk45itker3r7a98mu268h6e2486bh1.apps.googleusercontent.com",
+        "androidClientId": "905410154761-i30jh86ao8gvrjp1sqhuuo6u5p56tg3e.apps.googleusercontent.com",
+        "iosClientId": "",
+        "webClientId": "905410154761-lgpk45itker3r7a98mu268h6e2486bh1.apps.googleusercontent.com"
+      }
+    }
+  }
+}

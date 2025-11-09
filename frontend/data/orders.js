@@ -1,0 +1,32 @@
+export default [
+  {
+    id: 1001,
+    itemName: 'Paneer Butter Masala',
+    provider: 'Punjabi Zaika',
+    date: '2025-11-05',
+    amount: 150,
+    status: 'Delivered',
+    image: null,
+    emoji: '🧈',
+  },
+  {
+    id: 1002,
+    itemName: 'Masala Dosa',
+    provider: 'Meal Tango',
+    date: '2025-11-07',
+    amount: 100,
+    status: 'Preparing',
+    image: null,
+    emoji: '🧇',
+  },
+  {
+    id: 1003,
+    itemName: 'Rajma Chawal',
+    provider: 'Delish Kitchen',
+    date: '2025-11-09',
+    amount: 120,
+    status: 'Out for Delivery',
+    image: null,
+    emoji: '🍛',
+  },
+];
