@@ -10,6 +10,7 @@ import {
   Modal,
   Animated,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, fonts, spacing, borderRadius, shadows } from '../styles/theme';
 import { AuthContext } from '../context/AuthContext';
 import { useNavAnimation } from '../context/NavAnimationContext';
@@ -33,6 +34,8 @@ const SubscriptionScreen = ({ navigation }) => {
   const [pendingPlan, setPendingPlan] = useState(null); // the new plan card user tapped
   const [selectedDate, setSelectedDate] = useState('Today');
   const [selectedTime, setSelectedTime] = useState('12:30 PM');
+  const [selectedDay, setSelectedDay] = useState(18);
+  const [currentMonth, setCurrentMonth] = useState('June 2023');
   const sheetY = useRef(new Animated.Value(300)).current;
 
   useEffect(() => {
@@ -223,6 +226,7 @@ const SubscriptionScreen = ({ navigation }) => {
         onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.modalBackdrop}>
+          <SafeAreaView edges={['bottom']}>
           <Animated.View style={[styles.sheet, { transform: [{ translateY: sheetY }] }]}>
             <ScrollView showsVerticalScrollIndicator={false}>
               <Text style={styles.sheetTitle}>Choose Your Plan</Text>
@@ -248,28 +252,51 @@ const SubscriptionScreen = ({ navigation }) => {
 
               {/* Date & Time */}
               <View style={{ marginTop: spacing.lg }}>
-                <Text style={styles.subTitle}>Select Date & Time</Text>
-                <View style={styles.selectorRow}>
-                  {['Today', 'Tomorrow', 'Mon'].map((d) => (
-                    <TouchableOpacity
-                      key={d}
-                      onPress={() => setSelectedDate(d)}
-                      style={[styles.pill, selectedDate === d && styles.pillActive]}
-                      activeOpacity={0.8}
-                    >
-                      <Text style={[styles.pillText, selectedDate === d && styles.pillTextActive]}>{d}</Text>
+                <Text style={styles.subTitle}>Select dates</Text>
+                <View style={styles.calendarBox}>
+                  <View style={styles.calHeader}>
+                    <TouchableOpacity style={styles.calNav} activeOpacity={0.7}>
+                      <Text style={styles.calNavText}>{'<'}</Text>
                     </TouchableOpacity>
-                  ))}
+                    <Text style={styles.calTitle}>{currentMonth}</Text>
+                    <TouchableOpacity style={styles.calNav} activeOpacity={0.7}>
+                      <Text style={styles.calNavText}>{'>'}</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <View style={styles.dowRow}>
+                    {['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map((d) => (
+                      <Text key={d} style={styles.dowText}>{d}</Text>
+                    ))}
+                  </View>
+                  <View style={styles.daysGrid}>
+                    {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
+                      <TouchableOpacity
+                        key={d}
+                        onPress={() => setSelectedDay(d)}
+                        style={[styles.dayCell, selectedDay === d && styles.dayCellSelected]}
+                        activeOpacity={0.8}
+                      >
+                        <Text style={[styles.dayText, selectedDay === d && styles.dayTextSelected]}>{d}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
                 </View>
-                <View style={[styles.selectorRow, { marginTop: spacing.sm }]}>
-                  {['12:30 PM', '1:00 PM', '1:30 PM', '2:00 PM'].map((t) => (
+
+                <Text style={[styles.subTitle, { marginTop: spacing.lg }]}>Select Time Slot</Text>
+                <View style={styles.timeGrid}>
+                  {[
+                    '8 am - 9 am','9 am - 10 am','10 am - 11 am',
+                    '11 am - 12 pm','12 pm - 1 pm','1 pm - 2 pm',
+                    '2 pm - 3 pm','3 pm - 4 pm','4 pm - 5 pm',
+                    '5 pm - 6 pm','6 pm - 7 pm','8 pm - 9 pm',
+                  ].map((slot) => (
                     <TouchableOpacity
-                      key={t}
-                      onPress={() => setSelectedTime(t)}
-                      style={[styles.pill, selectedTime === t && styles.pillActive]}
-                      activeOpacity={0.8}
+                      key={slot}
+                      onPress={() => setSelectedTime(slot)}
+                      style={[styles.timeChip, selectedTime === slot && styles.timeChipActive]}
+                      activeOpacity={0.85}
                     >
-                      <Text style={[styles.pillText, selectedTime === t && styles.pillTextActive]}>{t}</Text>
+                      <Text style={[styles.timeChipText, selectedTime === slot && styles.timeChipTextActive]}>{slot}</Text>
                     </TouchableOpacity>
                   ))}
                 </View>
@@ -312,6 +339,7 @@ const SubscriptionScreen = ({ navigation }) => {
               </TouchableOpacity>
             </View>
           </Animated.View>
+          </SafeAreaView>
         </View>
       </Modal>
     </View>
@@ -555,6 +583,59 @@ const styles = StyleSheet.create({
   sheetFooter: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 16 },
   footerBtn: { flex: 1, borderRadius: 12, paddingVertical: 12, alignItems: 'center' },
   footerBtnOutline: { borderWidth: 1.5, borderColor: colors.accent, marginRight: 10 },
+  // Calendar styles
+  calendarBox: {
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: borderRadius.lg,
+    padding: spacing.md,
+    backgroundColor: colors.white,
+    ...shadows.card,
+  },
+  calHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: spacing.sm,
+  },
+  calNav: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  calNavText: { fontFamily: fonts.semiBold, color: colors.textPrimary },
+  calTitle: { fontFamily: fonts.semiBold, color: colors.textPrimary },
+  dowRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: spacing.xs },
+  dowText: { width: `${100/7}%`, textAlign: 'center', fontSize: 12, color: colors.textSecondary, fontFamily: fonts.medium },
+  daysGrid: { flexDirection: 'row', flexWrap: 'wrap' },
+  dayCell: {
+    width: `${100/7}%`,
+    aspectRatio: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+    marginVertical: 2,
+  },
+  dayCellSelected: { backgroundColor: '#FFF3E8', borderWidth: 1, borderColor: colors.accent },
+  dayText: { fontFamily: fonts.medium, color: colors.textPrimary },
+  dayTextSelected: { color: colors.accent, fontFamily: fonts.semiBold },
+  // Time slots
+  timeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  timeChip: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.white,
+  },
+  timeChipActive: { backgroundColor: '#FFF3E8', borderColor: colors.accent },
+  timeChipText: { fontSize: 13, fontFamily: fonts.medium, color: colors.textSecondary },
+  timeChipTextActive: { color: colors.accent, fontFamily: fonts.semiBold },
 });
 
 export default SubscriptionScreen;

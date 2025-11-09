@@ -1,9 +1,12 @@
+import 'react-native-gesture-handler';
+import 'react-native-reanimated';
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { StatusBar } from 'expo-status-bar';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as Font from 'expo-font';
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import { AppProvider, AppContext } from './context/AppContext';
@@ -116,20 +119,22 @@ const App = () => {
   };
 
   return (
-    <SafeAreaProvider>
-      <ReduxProvider store={store}>
-        <AuthProvider>
-          <AppProvider>
-            <ScrollProvider>
-              <NavAnimationProvider>
-                <AppContent />
-              </NavAnimationProvider>
-            </ScrollProvider>
-            <StatusBar style="auto" />
-          </AppProvider>
-        </AuthProvider>
-      </ReduxProvider>
-    </SafeAreaProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <ReduxProvider store={store}>
+          <AuthProvider>
+            <AppProvider>
+              <ScrollProvider>
+                <NavAnimationProvider>
+                  <AppContent />
+                </NavAnimationProvider>
+              </ScrollProvider>
+              <StatusBar style="auto" />
+            </AppProvider>
+          </AuthProvider>
+        </ReduxProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 };
 

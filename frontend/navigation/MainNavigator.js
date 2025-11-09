@@ -31,6 +31,7 @@ const MainNavigator = () => {
           transform: [{ translateY }],
           opacity,
           zIndex: 100,
+          height: 70,
         }}
         pointerEvents="box-none"
       >

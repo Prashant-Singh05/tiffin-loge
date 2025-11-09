@@ -9,6 +9,11 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import popularData from '../data/popular';
 import subscriptionsData from '../data/subscriptions';
 import { addItem, incrementQty, decrementQty } from '../store/cartSlice';
+import RestaurantHeader from '../components/RestaurantHeader';
+import CookDetailsSheet from '../components/CookDetailsSheet';
+import ToggleButtons from '../components/ToggleButtons';
+import DishCard from '../components/DishCard';
+import PlanCard from '../components/PlanCard';
 
 const toSlug = (s = '') => s.toLowerCase().replace(/\s+/g, '-');
 
@@ -21,9 +26,22 @@ const MenuDetail = () => {
   const cartItems = useSelector((state) => state.cart.items);
   const [activeTab, setActiveTab] = useState('order'); // 'order' | 'subscribe'
   const listRef = useRef(null);
+  const [cookVisible, setCookVisible] = useState(false);
+  const [tab, setTab] = useState('order');
+  const [selectedPlan, setSelectedPlan] = useState(null);
 
   const menuItems = useMemo(() => popularData.filter((p) => p.provider === providerName), [providerName]);
   const planItems = useMemo(() => subscriptionsData.filter((s) => s.provider === providerName), [providerName]);
+  const recommendedDishes = useMemo(() => menuItems, [menuItems]);
+  const subscriptionPlans = useMemo(() => (
+    planItems.map((p) => ({
+      title: p.planName,
+      price: Math.round(p.price / (p.mealsPerDay * 30)),
+      meals: p.mealsPerDay * 30,
+      total: p.price,
+      breakdown: `${p.mealsPerDay} meal/day`,
+    }))
+  ), [planItems]);
 
   const inCartQty = (id) => cartItems.find((i) => i.id === id)?.qty || 0;
 
@@ -88,59 +106,65 @@ const MenuDetail = () => {
     );
   };
 
+  const restaurant = {
+    name: providerName,
+    bannerImage: null,
+    timings: '10am–3pm, 7pm–9pm',
+    cuisineType: cuisine || 'North Indian',
+    rating: rating || 4.6,
+    cookName: 'Chef Anjali',
+    verified: true,
+  };
+  const cook = {
+    name: 'Chef Anjali',
+    experience: 6,
+    hygieneRating: 4.7,
+    lastInspection: '2025-06-01',
+    specialities: ['North Indian', 'Punjabi', 'Veg', 'Jain'],
+    bio: 'Home chef crafting wholesome meals with fresh seasonal produce.',
+    area: 'Vaishali Nagar, Jaipur',
+    verifiedTill: '2026-12-31',
+    totalReviews: 247,
+    reviewRating: 4.8,
+    safetyTags: ['Fresh Ingredients', 'Clean Utensils', 'Daily Cooking', 'Glove Usage'],
+    sentimentTags: ['Great Taste', 'Fresh Daily', 'Family Friendly'],
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 120 }}>
-        <View style={styles.header}>
-          <View style={styles.banner}>
-            <Text style={styles.bannerEmoji}>🍽️</Text>
-          </View>
-          <Text style={styles.title}>{providerName}</Text>
-          <Text style={styles.subtitle}>{cuisine}</Text>
-          <View style={styles.metaRow}>
-            <View style={styles.ratingChip}>
-              <Ionicons name="star" size={12} color="#FFC107" />
-              <Text style={styles.ratingText}>{rating}</Text>
-            </View>
-            {!!distance && <Text style={styles.distance}>{distance}</Text>}
-          </View>
-          {/* Toggle buttons */}
-          <View style={styles.toggleRow}>
-            <TouchableOpacity
-              onPress={() => { setActiveTab('order'); listRef.current?.scrollToOffset?.({ offset: 0, animated: true }); }}
-              style={[styles.toggleBtn, {
-                borderColor: activeTab === 'order' ? colors.primary : colors.border,
-                backgroundColor: activeTab === 'order' ? colors.primary : colors.white,
-              }]}
-              activeOpacity={0.9}
-            >
-              <Text style={[styles.toggleText, { color: activeTab === 'order' ? colors.white : colors.textSecondary }]}>Order Now</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => { setActiveTab('subscribe'); listRef.current?.scrollToOffset?.({ offset: 0, animated: true }); }}
-              style={[styles.toggleBtn, {
-                borderColor: activeTab === 'subscribe' ? colors.accent : colors.border,
-                backgroundColor: activeTab === 'subscribe' ? colors.accent : colors.white,
-              }]}
-              activeOpacity={0.9}
-            >
-              <Text style={[styles.toggleText, { color: activeTab === 'subscribe' ? colors.white : colors.textSecondary }]}>Subscribe</Text>
-            </TouchableOpacity>
-          </View>
+        <RestaurantHeader restaurant={restaurant} onPressCook={() => setCookVisible(true)} />
+        <View style={{ paddingHorizontal: spacing.xl, paddingTop: 20 }}>
+          <ToggleButtons tab={tab} onChange={(t) => { setTab(t); listRef.current?.scrollToOffset?.({ offset: 0, animated: true }); }} />
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Menu</Text>
-          <FlatList
-            ref={listRef}
-            data={activeTab === 'order' ? menuItems : planItems.map(p => ({ id: p.id, name: p.planName, description: `${p.duration} • ${p.mealsPerDay} meal/day`, price: p.price, image: p.image, emoji: '🥗' }))}
-            keyExtractor={(i) => i.id.toString()}
-            renderItem={renderItem}
-            scrollEnabled={false}
-            contentContainerStyle={{ paddingHorizontal: spacing.md }}
-          />
+          <Text style={styles.sectionTitle}>{tab === 'order' ? 'Recommended' : 'Menu Plans'}</Text>
+          {tab === 'order' ? (
+            <View style={{ paddingHorizontal: spacing.md }}>
+              {recommendedDishes.map((d) => (
+                <DishCard
+                  key={d.id}
+                  dish={d}
+                  onAdd={() => dispatch(addItem({ id: d.id, name: d.name, price: d.price, image: d.image, providerId, providerName }))}
+                />
+              ))}
+            </View>
+          ) : (
+            <View style={{ paddingHorizontal: spacing.md }}>
+              {subscriptionPlans.map((p, idx) => (
+                <PlanCard
+                  key={`${p.title}-${idx}`}
+                  plan={p}
+                  selected={selectedPlan === idx}
+                  onSelect={() => setSelectedPlan(idx)}
+                />
+              ))}
+            </View>
+          )}
         </View>
       </ScrollView>
+      <CookDetailsSheet visible={cookVisible} onClose={() => setCookVisible(false)} cook={cook} />
     </View>
   );
 };

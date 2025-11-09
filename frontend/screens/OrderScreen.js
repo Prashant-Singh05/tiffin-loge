@@ -7,14 +7,20 @@ import {
   ScrollView,
   TouchableOpacity,
   FlatList,
+  Dimensions,
+  PixelRatio,
 } from 'react-native';
 import { colors, fonts, spacing, borderRadius, shadows } from '../styles/theme';
 import Feather from '@expo/vector-icons/Feather';
 import { AuthContext } from '../context/AuthContext';
-import ShadowButton from '../components/ShadowButton';
 import SafeImage from '../components/SafeImage';
 import ordersData from '../data/orders';
 import { useNavAnimation } from '../context/NavAnimationContext';
+
+// simple responsive font scaler (fallback if RFValue is not available)
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const guidelineBaseWidth = 375;
+const scaleFont = (size) => PixelRatio.roundToNearestPixel((SCREEN_WIDTH / guidelineBaseWidth) * size);
 
 const OrderScreen = ({ navigation }) => {
   const { user } = React.useContext(AuthContext);
@@ -80,10 +86,23 @@ const OrderScreen = ({ navigation }) => {
         {/* Footer */}
         <View style={styles.orderFooter}>
           <Text style={styles.orderPrice}>₹{item.amount}</Text>
-          <View style={styles.actionsRight}>
-            <ShadowButton title="Order Details" compact onPress={() => {}} style={[styles.cta, { marginLeft: 8 }]} />
+          <View style={styles.actionsRow}>
+            <TouchableOpacity
+              activeOpacity={0.85}
+              onPress={() => {}}
+              style={styles.actionBtnOutline}
+            >
+              <Text style={styles.actionBtnOutlineText}>Order Details</Text>
+            </TouchableOpacity>
+
             {item.status !== 'Delivered' && item.status !== 'Cancelled' && (
-              <ShadowButton title="Track Order" compact onPress={() => {}} style={styles.cta} />
+              <TouchableOpacity
+                activeOpacity={0.85}
+                onPress={() => {}}
+                style={styles.actionBtnPrimary}
+              >
+                <Text style={styles.actionBtnPrimaryText}>Track Order</Text>
+              </TouchableOpacity>
             )}
           </View>
         </View>
@@ -231,8 +250,49 @@ const styles = StyleSheet.create({
   orderItems: { marginBottom: spacing.md },
   orderFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   orderPrice: { fontWeight: '700', color: '#E74C3C', fontSize: 16 },
-  actionsRight: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  cta: { minWidth: 130 },
+  // Adaptive action buttons container
+  actionsRow: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginLeft: spacing.md,
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  // Outline button (left)
+  actionBtnOutline: {
+    flex: 1,
+    paddingVertical: 12,
+    marginHorizontal: 8,
+    borderWidth: 2,
+    borderColor: colors.primary,
+    backgroundColor: colors.white,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  actionBtnOutlineText: {
+    fontWeight: '700',
+    color: colors.primary,
+    fontSize: scaleFont(14),
+    fontFamily: fonts.semiBold,
+  },
+  // Primary button (right)
+  actionBtnPrimary: {
+    flex: 1,
+    paddingVertical: 12,
+    marginHorizontal: 8,
+    backgroundColor: colors.primary,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  actionBtnPrimaryText: {
+    fontWeight: '700',
+    color: colors.white,
+    fontSize: scaleFont(14),
+    fontFamily: fonts.semiBold,
+  },
 });
 
 export default OrderScreen;
