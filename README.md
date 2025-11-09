@@ -1,4 +1,4 @@
-# Tiffin hub- Full-Stack Mobile Application
+# Tiffin Hub — Full-Stack Mobile Application
 
 A cross-platform mobile food delivery and subscription application built with React Native (Expo), Node.js, Express, and MongoDB.
 
@@ -48,7 +48,7 @@ npm install
 3. Create a `.env` file in the backend directory:
 ```env
 PORT=5000
-MONGODB_URI=mongodb://localhost:27017/dabba-hub
+MONGODB_URI=mongodb://localhost:27017/tiffin-hub
 JWT_SECRET=your_jwt_secret_key_here
 JWT_EXPIRE=7d
 GOOGLE_MAPS_API_KEY=your_google_maps_api_key_here
@@ -104,7 +104,7 @@ npm start
 ## 📁 Project Structure
 
 ```
-Dabba Hub/
+Tiffin Hub/
 ├── backend/
 │   ├── config/
 │   │   └── database.js
@@ -278,20 +278,20 @@ For development with hot reload:
 - Backend: `npm run dev` (requires nodemon)
 - Frontend: `npm start` (Expo handles hot reload automatically)
 
-## 🚀 Production Build
+## ▶️ Run Backend and Frontend Together
 
-To create production builds:
-```bash
-# Android
-expo build:android
+Open two terminals:
+```
+# Terminal 1
+cd backend && npm run dev
 
-# iOS
-expo build:ios
+# Terminal 2
+cd frontend && npm start
 ```
 
 ---
 
-**Built with ❤️ for Dabba Hub**
+**Built with ❤️ for Tiffin Hub**
 
-#
+
 
